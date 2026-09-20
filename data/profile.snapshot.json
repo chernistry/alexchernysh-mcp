@@ -45,11 +45,7 @@
           "Open-source governance layer for AI agents, built on a deterministic multi-agent scheduler, distributed on PyPI.",
           "Coordinates 40+ AI coding-agent adapters in parallel — Claude Code, Codex, OpenAI Agents SDK, Cursor, Gemini CLI, Aider, Amp, and more.",
           "What demo-grade multi-agent tools do not have: worktree-isolated execution, janitor verification, quality gates, HMAC audit trail, cost-aware model routing.",
-          "Supports MCP and A2A protocols, Cloudflare cloud runtime.",
-          "HireEx — hosted job-discovery service",
-          "Creator and maintainer of HireEx (https://hireex.ai, closed-source SaaS — no public repository).",
-          "A quiet hosted service: drop a résumé once; every morning a ranked daily shortlist arrives with one-line pitch hints. Operated by Sip Your Drink Ltd.",
-          "Pricing: Free (3 roles each morning), Plus $19/mo (10 roles + personalised pitch), Pro $49/mo (exclusive sources + follow-up reminders)."
+          "Supports MCP and A2A protocols, Cloudflare cloud runtime."
         ]
       },
       {
@@ -119,7 +115,6 @@
         "heading": "Preferred Questions",
         "items": [
           "What is Bernstein and what does it solve?",
-          "What is HireEx?",
           "How do you coordinate multiple AI agents reliably?",
           "How do you keep a RAG system grounded?",
           "What would you audit first in an unreliable AI stack?",
@@ -132,8 +127,6 @@
         "items": [
           "What is Bernstein?",
           "Bernstein is the open-source governance layer for AI agents, at bernstein.run — Apache-2.0 on GitHub. It coordinates 40+ AI coding-agent adapters (Claude Code, Codex, OpenAI Agents SDK, Cursor, Gemini CLI and more) in parallel with worktree isolation, quality gates, janitor verification, HMAC audit trail, and cost-aware model routing. MCP/A2A supported. Designed for production reliability, not demo spectacle.",
-          "What is HireEx?",
-          "HireEx is my hosted job-discovery service at hireex.ai — closed-source SaaS, no public repository. Drop a résumé once; every morning a ranked daily shortlist arrives with one-line pitch hints. Free (3 roles/morning), Plus $19/mo (10 roles + personalised pitch), Pro $49/mo (exclusive sources + follow-up reminders). Operated by Sip Your Drink Ltd.",
           "How do I audit a shaky RAG stack?",
           "Start with retrieval quality and fallback behavior. Then check tool boundaries, eval coverage, citation/grounding gates, telemetry, rollback paths, and who actually owns the system once it is live.",
           "How do I think about agent boundaries?",
