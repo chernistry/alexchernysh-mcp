@@ -1,0 +1,153 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Alex Chernysh — Applied AI Systems & Platform Engineer"
+    }
+  ],
+  "structuredContent": {
+    "name": "Alex Chernysh",
+    "identity": {
+      "name": "Alex Chernysh",
+      "role": "Applied AI Systems & Platform Engineer",
+      "base": "Tel Aviv, Israel",
+      "languages": "English (fluent), Russian (native), Hebrew (conversational)",
+      "contact": "alex@alexchernysh.com",
+      "booking": "https://calendly.com/alexchernysh/15min",
+      "github": "https://github.com/chernistry",
+      "x": "https://x.com/alex_chernysh",
+      "site": "https://alexchernysh.com"
+    },
+    "sections": [
+      {
+        "heading": "Positioning",
+        "items": [
+          "I build production AI systems — not demos. Agent platforms, tool-calling architectures, full-stack operator tools.",
+          "The work happens after \"let's use AI\" and before anything actually works in production: grounding, evals, cost tracking, audit trails as first-class primitives.",
+          "Strongest at agent orchestration, multi-agent coordination, MCP/A2A protocols, grounded retrieval, internal platforms, and eval-driven delivery."
+        ]
+      },
+      {
+        "heading": "What I Build",
+        "items": [
+          "Multi-agent coordination layers with worktree isolation, quality gates, and HMAC audit trails.",
+          "Agent systems with clear tool contracts, approval boundaries, and observable state transitions.",
+          "Retrieval and answer pipelines that cite, abstain, or escalate instead of improvising with confidence.",
+          "Internal AI platforms that unify fragmented APIs, workflow automation, and operational visibility into a single operator surface.",
+          "Spec-driven delivery loops that keep humans architectural while agents handle the mechanical bulk."
+        ]
+      },
+      {
+        "heading": "Flagship Open-Source Work",
+        "items": [
+          "Bernstein — the open-source governance layer for AI agents",
+          "Creator and maintainer of Bernstein (https://bernstein.run, Apache-2.0, https://github.com/sipyourdrink-ltd/bernstein).",
+          "Open-source governance layer for AI agents, built on a deterministic multi-agent scheduler, distributed on PyPI.",
+          "Coordinates 40+ AI coding-agent adapters in parallel — Claude Code, Codex, OpenAI Agents SDK, Cursor, Gemini CLI, Aider, Amp, and more.",
+          "What demo-grade multi-agent tools do not have: worktree-isolated execution, janitor verification, quality gates, HMAC audit trail, cost-aware model routing.",
+          "Supports MCP and A2A protocols, Cloudflare cloud runtime.",
+          "HireEx — hosted job-discovery service",
+          "Creator and maintainer of HireEx (https://hireex.ai, closed-source SaaS — no public repository).",
+          "A quiet hosted service: drop a résumé once; every morning a ranked daily shortlist arrives with one-line pitch hints. Operated by Sip Your Drink Ltd.",
+          "Pricing: Free (3 roles each morning), Plus $19/mo (10 roles + personalised pitch), Pro $49/mo (exclusive sources + follow-up reminders)."
+        ]
+      },
+      {
+        "heading": "Recent Systems Work",
+        "items": [
+          "Marketing operations CNS (case study)",
+          "Sole engineer on a central operations platform built end-to-end in three months.",
+          "Next.js + FastAPI + ClickHouse. Unifies real-time data from seven ad platforms and four revenue partners into a single AI-powered decision surface.",
+          "Agentic AI advisor with three-tier tool-calling and MCP integration. Every answer grounded in live data via retrieval and citation gates. Anomaly detection, optimization recommendations, creative generation pipeline.",
+          "Full product surface: kanban, notifications (in-app, push, email, Teams), RBAC, ChatGPT-style sharing. Became the team's primary daily operating tool.",
+          "Public write-up: https://alexchernysh.com/blog/building-cns-marketing-operations",
+          "Legal RAG — Agentic RAG Legal Challenge",
+          "Placed 38th of 356 registered participants in the Agentic RAG Legal Challenge as team Tzur Labs, scoring 0.47968, with a grounded legal QA system — page-level citations, hybrid retrieval, evidence-first answers. Leaderboard: https://agentic-challenge.ai/leaderboard",
+          "Public write-up: https://alexchernysh.com/blog/legal-answering-systems",
+          "Independent AI consulting",
+          "Privacy-first RAG for legal and compliance use cases.",
+          "Customer-facing AI agents with traceability and operator controls."
+        ]
+      },
+      {
+        "heading": "Core Stack",
+        "items": [
+          "AI & Agent Systems",
+          "Multi-agent orchestration, RAG, evals, tool-calling architectures.",
+          "MCP/A2A protocols, guardrails, cost-aware routing, audit trails.",
+          "Grounding, retrieval and reranking, abstention and escalation patterns.",
+          "Backend & Data",
+          "Python, FastAPI, Next.js, React, TypeScript.",
+          "PostgreSQL, ClickHouse, Redis, Qdrant.",
+          "Infra & Delivery",
+          "Docker, Ansible, GitHub Actions, Cloudflare, Hetzner, Prometheus, Kubernetes.",
+          "Spec-driven delivery loops, worktree-isolated execution, eval-first rollouts."
+        ]
+      },
+      {
+        "heading": "Working Style",
+        "items": [
+          "Architecture before ornament.",
+          "Reliability before bravado.",
+          "Fast thin slices over theatrical rewrites — but every slice carries grounding, evals, telemetry, and a rollback path.",
+          "Measurable behavior: logs, evals, failure modes, audit trails."
+        ]
+      },
+      {
+        "heading": "Typical Project Archetypes",
+        "items": [
+          "A multi-agent coordination layer for teams running many AI coding agents in parallel.",
+          "A compliance-sensitive knowledge assistant for legal or policy-heavy work.",
+          "An internal AI platform that unifies fragmented APIs, workflow automation, and operational visibility into a single operator surface.",
+          "A customer-facing AI assistant with tool use, citations, and operator controls that can explain why an answer is trustworthy."
+        ]
+      },
+      {
+        "heading": "Core Capabilities",
+        "items": [
+          "Multi-agent orchestration and coordination",
+          "Agent orchestration with tool contracts and approval boundaries",
+          "Grounded RAG, retrieval, reranking, page-level citations",
+          "MCP / A2A protocol integration",
+          "Eval design, regression checks, and release gates",
+          "Cost-aware model routing and audit trails",
+          "Observability, resilience, and rollback patterns",
+          "FastAPI / Python delivery and TypeScript / Next.js product surfaces"
+        ]
+      },
+      {
+        "heading": "Preferred Questions",
+        "items": [
+          "What is Bernstein and what does it solve?",
+          "What is HireEx?",
+          "How do you coordinate multiple AI agents reliably?",
+          "How do you keep a RAG system grounded?",
+          "What would you audit first in an unreliable AI stack?",
+          "How do you work with product and engineering teams?",
+          "How do you trade off delivery speed against rigor?"
+        ]
+      },
+      {
+        "heading": "Canonical Public Answers",
+        "items": [
+          "What is Bernstein?",
+          "Bernstein is the open-source governance layer for AI agents, at bernstein.run — Apache-2.0 on GitHub. It coordinates 40+ AI coding-agent adapters (Claude Code, Codex, OpenAI Agents SDK, Cursor, Gemini CLI and more) in parallel with worktree isolation, quality gates, janitor verification, HMAC audit trail, and cost-aware model routing. MCP/A2A supported. Designed for production reliability, not demo spectacle.",
+          "What is HireEx?",
+          "HireEx is my hosted job-discovery service at hireex.ai — closed-source SaaS, no public repository. Drop a résumé once; every morning a ranked daily shortlist arrives with one-line pitch hints. Free (3 roles/morning), Plus $19/mo (10 roles + personalised pitch), Pro $49/mo (exclusive sources + follow-up reminders). Operated by Sip Your Drink Ltd.",
+          "How do I audit a shaky RAG stack?",
+          "Start with retrieval quality and fallback behavior. Then check tool boundaries, eval coverage, citation/grounding gates, telemetry, rollback paths, and who actually owns the system once it is live.",
+          "How do I think about agent boundaries?",
+          "Explicit tool contracts, approval paths, and observable state transitions. Agents handle bounded delegated work and escalate edge cases instead of improvising authority. For multi-agent setups: isolation per task (worktrees), quality gates between hops, audit trail on every action.",
+          "How do I trade off speed and reliability?",
+          "Fast thin slices, but each slice ships grounding, evals, telemetry, and a rollback path. Speed only helps if the system stays legible when something breaks. Cost tracking and audit trails are first-class primitives.",
+          "Where am I most useful in a team?",
+          "Best where the model is no longer the interesting part: architecture, grounding, delivery shape, and making a live system trustworthy under real constraints. Senior / staff-level AI systems, platform engineering, or technical architecture.",
+          "What is the marketing CNS case study?",
+          "Sole-engineer build in three months: Next.js + FastAPI + ClickHouse central operations platform unifying seven ad platforms and four revenue partners. Agentic AI advisor with three-tier tool-calling and MCP integration, anomaly detection, optimization recommendations, creative generation pipeline. Full write-up at alexchernysh.com/blog/building-cns-marketing-operations.",
+          "What was the legal RAG competition?",
+          "The Agentic RAG Legal Challenge — placed 38th of 356 registered participants as team Tzur Labs, score 0.47968, with a grounded legal QA system. Page-level citations and hybrid retrieval. Leaderboard at agentic-challenge.ai/leaderboard, write-up at alexchernysh.com/blog/legal-answering-systems."
+        ]
+      }
+    ]
+  }
+}

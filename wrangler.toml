@@ -1,0 +1,29 @@
+name = "alexchernysh-mcp"
+main = "src/index.ts"
+compatibility_date = "2026-09-18"
+account_id = "014c346e97ff3260b6956903e62f944d"
+workers_dev = false
+
+[[routes]]
+pattern = "mcp.alexchernysh.com/*"
+zone_id = "071a28439f61b1e6d838054f61e4feb7"
+
+# Fonts ship inside the Worker as Data modules and are served at /fonts/*,
+# so a page loads no third-party resource.
+[[rules]]
+type = "Data"
+globs = ["**/*.woff2"]
+fallthrough = true
+
+[observability]
+enabled = true
+
+# 60 requests per minute per client IP on POST /mcp.
+# namespace_id is an arbitrary per-account integer that scopes the counters.
+[[ratelimits]]
+name = "MCP_RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 60, period = 60 }
+
+[vars]
+ORIGIN_MCP_URL = "https://alexchernysh.com/mcp"

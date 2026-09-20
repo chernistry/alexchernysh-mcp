@@ -1,0 +1,25 @@
+{
+  "name": "alexchernysh-mcp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Cloudflare Worker for mcp.alexchernysh.com: landing page, tool console and edge proxy for a stateless MCP endpoint.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "bash scripts/check-outbound.sh && vitest run",
+    "typecheck": "tsc --noEmit",
+    "audit": "npm audit --audit-level=high",
+    "snapshots": "node scripts/refresh-snapshots.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260918.1",
+    "@types/node": "24.10.1",
+    "typescript": "^5.4.0",
+    "vitest": "4.1.11",
+    "wrangler": "4.134.0"
+  }
+}
