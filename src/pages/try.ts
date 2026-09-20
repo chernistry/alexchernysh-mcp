@@ -120,7 +120,7 @@ function resultHtml(r: { source: string; latencyMs: number | null; request: unkn
   return `
 <section class="result" id="result" data-source="${escapeHtml(r.source)}">
   <div class="verdict ${isError ? "error" : "ok"}">${pill}</div>
-  <p>latency: ${r.latencyMs !== null ? `${r.latencyMs} ms` : "n/a"} &middot; source: ${escapeHtml(r.source)}</p>
+  <p class="meta timing">latency: ${r.latencyMs !== null ? `${r.latencyMs} ms` : "n/a"} &middot; source: ${escapeHtml(r.source)}</p>
   <pre class="request">${escapeHtml(JSON.stringify(r.request, null, 2))}</pre>
   <pre class="response">${escapeHtml(JSON.stringify(r.response, null, 2))}</pre>
 </section>`;
