@@ -33,6 +33,8 @@ import {
   withStandardHeaders,
   JSON_RPC_PARSE_ERROR,
   JSON_RPC_REQUEST_TOO_LARGE,
+  overLimit,
+  clientIp,
 } from "./limits.js";
 
 const DEFAULT_ORIGIN = "https://alexchernysh.com/mcp";
@@ -72,17 +74,6 @@ function originUrl(env: Env): string {
     // fall through
   }
   return DEFAULT_ORIGIN;
-}
-
-/** True when the caller has exhausted its per-IP bucket. Fails open: a
- * limiter error must not take the endpoint down. */
-async function overLimit(request: Request, env: Env): Promise<boolean> {
-  if (!env.MCP_RATE_LIMITER) return false;
-  try {
-    return !(await env.MCP_RATE_LIMITER.limit({ key: request.headers.get("cf-connecting-ip") ?? "unknown" })).success;
-  } catch {
-    return false;
-  }
 }
 
 /** Describe the JSON-RPC envelope for the request log: method, tool, client. Never the body. */
@@ -169,7 +160,7 @@ async function forward(request: Request, env: Env, log: Record<string, unknown>)
   // from this Worker, and only then does the origin trust the client IP.
   if (env.MCP_EDGE_SECRET) {
     headers.set("x-mcp-edge-secret", env.MCP_EDGE_SECRET);
-    headers.set("x-mcp-client-ip", request.headers.get("cf-connecting-ip") ?? "unknown");
+    headers.set("x-mcp-client-ip", clientIp(request));
   }
 
   const ctrl = new AbortController();

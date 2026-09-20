@@ -8,8 +8,9 @@ describe("discovery", () => {
       const txt = robotsTxt();
       expect(txt).toContain("User-agent: *");
       expect(txt).toContain("Allow: /");
+      expect(txt).toContain("Allow: /try");
       expect(txt).toContain("Disallow: /mcp");
-      expect(txt).toContain("Sitemap: https://mcp.alexchernysh.com/llms.txt");
+      expect(txt).not.toContain("Sitemap:");
     });
 
     it("is text/plain over HTTP", async () => {

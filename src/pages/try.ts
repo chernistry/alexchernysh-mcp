@@ -15,9 +15,9 @@
 // drift in shape from the one rendered here.
 
 import type { Env } from "../index.js";
-import { page, escapeHtml } from "./shell.js";
+import { page, escapeHtml, navBar, footer } from "./shell.js";
 import { listTools, callTool, type ToolDescriptor } from "../origin.js";
-import { MAX_BODY_BYTES } from "../limits.js";
+import { MAX_BODY_BYTES, overLimit, clientIp } from "../limits.js";
 
 const PUBLIC_MCP_URL = "https://mcp.alexchernysh.com/mcp";
 const DEFAULT_TOOL = "get_profile";
@@ -207,18 +207,25 @@ function notFoundPage(tools: ToolDescriptor[]): RenderResult {
   const names = tools.map((t) => escapeHtml(t.name)).join(", ");
   return shellPage(
     404,
-    `<h1>Tool not found.</h1><p>Available tools: ${names || "none"}.</p><p><a href="/try">Back to /try</a></p>`,
+    `${navBar("/try")}<main class="wrap try"><h1>Tool not found.</h1><p class="lede">Available tools: ${names || "none"}.</p><p><a href="/try">Back to /try</a></p></main>${footer()}`,
+  );
+}
+
+function rateLimitedPage(): RenderResult {
+  return shellPage(
+    429,
+    `${navBar("/try")}<main class="wrap try"><h1>Slow down.</h1><p class="lede">This address has used its 60 requests for the minute. Wait a moment and try again.</p><p><a href="/try">Back to /try</a></p></main>${footer()}`,
   );
 }
 
 function tooLargePage(): RenderResult {
   return shellPage(
     413,
-    `<h1>Arguments too large.</h1><p>The arguments exceed the 64 KB limit accepted by this console.</p><p><a href="/try">Back to /try</a></p>`,
+    `${navBar("/try")}<main class="wrap try"><h1>Arguments too large.</h1><p class="lede">The arguments exceed the 64 KB limit accepted by this console.</p><p><a href="/try">Back to /try</a></p></main>${footer()}`,
   );
 }
 
-export async function renderTry(env: Env, url: URL, form?: FormData): Promise<RenderResult> {
+export async function renderTry(env: Env, url: URL, form?: FormData, request?: Request): Promise<RenderResult> {
   const toolsResult = await listTools(env);
   const tools = toolsResult.value;
 
@@ -259,7 +266,12 @@ export async function renderTry(env: Env, url: URL, form?: FormData): Promise<Re
   }
 
   const shouldExecute = isPost || isPermalink;
-  const result = shouldExecute ? await callTool(env, tool.name, args) : null;
+  // Executing a tool here spends the same origin budget as POST /mcp, so it
+  // sits behind the same per-IP bucket and reaches the origin as the visitor.
+  if (shouldExecute && request && (await overLimit(request, env))) return rateLimitedPage();
+  const result = shouldExecute
+    ? await callTool(env, tool.name, args, { clientIp: request ? clientIp(request) : undefined })
+    : null;
 
   const fieldsHtml = Object.entries(properties)
     .map(([name, prop]) => fieldHtml(name, prop, required.has(name), values[name]))
@@ -272,27 +284,30 @@ export async function renderTry(env: Env, url: URL, form?: FormData): Promise<Re
     )
     .join("");
 
-  const curl = `curl -s ${PUBLIC_MCP_URL} -H 'content-type: application/json' -H 'accept: application/json' -d '${JSON.stringify(buildCall(tool.name, args))}'`;
+  const curl = `curl -s ${PUBLIC_MCP_URL} -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '${JSON.stringify(buildCall(tool.name, args))}'`;
 
   // Data, not executable: escape "<" so a tool description containing
   // "</script" can never terminate the element early.
   const toolsJson = JSON.stringify(tools).replace(/</g, "\\u003c");
 
-  const bodyHtml = `
+  const bodyHtml = `${navBar("/try")}<main class="wrap try">
 <h1>Run a tool.</h1>
-<p>Pick a tool, fill the arguments, see exactly what goes over the wire.</p>
+<p class="lede">Pick a tool, fill the arguments, see exactly what goes over the wire.</p>
 <form method="post" action="/try" id="try-form">
   <div class="field">
     <label for="f-tool">tool</label>
     <select name="tool" id="f-tool">${toolOptions}</select>
   </div>
   ${fieldsHtml}
-  <button class="btn" type="submit">Run</button>
-  <button class="btn" type="submit" formmethod="get" formaction="/try">Change tool</button>
+  <div class="actions">
+    <button class="btn" type="submit">Run</button>
+    <button class="btn ghost" type="submit" formmethod="get" formaction="/try">Change tool</button>
+  </div>
 </form>
-<p class="copy"><code>${escapeHtml(curl)}</code></p>
+<p class="curl"><code>${escapeHtml(curl)}</code></p>
 ${result ? resultHtml({ source: result.source, latencyMs: result.latencyMs, request: result.request, response: result.response }) : ""}
-<script type="application/json" id="tools">${toolsJson}</script>`;
+<script type="application/json" id="tools">${toolsJson}</script>
+</main>${footer()}`;
 
   if (isPost) {
     // A real 303: the router forwards `location`, so a browser lands on the

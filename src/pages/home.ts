@@ -13,7 +13,7 @@
 import type { Env } from "../index.js";
 import { VERSION } from "../version.js";
 import { listTools, callTool } from "../origin.js";
-import { page, escapeHtml } from "./shell.js";
+import { page, escapeHtml, navBar, footer } from "./shell.js";
 
 const ENDPOINT = "https://mcp.alexchernysh.com/mcp";
 
@@ -29,7 +29,7 @@ const INSTALL: { label: string; command: string }[] = [
   {
     label: "curl",
     command:
-      `curl -s ${ENDPOINT} -H 'content-type: application/json' -H 'accept: application/json' ` +
+      `curl -s ${ENDPOINT} -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' ` +
       `-d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'`,
   },
 ];
@@ -68,19 +68,6 @@ const json = (value: unknown): string => {
     return "null";
   }
 };
-
-function navBar(): string {
-  return (
-    '<header class="nav"><div class="wrap nav-in">' +
-    '<a class="brand" href="/">alexchernysh <em>mcp</em></a>' +
-    '<nav class="nav-links" aria-label="Sections">' +
-    '<a href="#install">install</a>' +
-    '<a href="/try">try</a>' +
-    '<a href="https://alexchernysh.com">alexchernysh.com</a>' +
-    '<a href="https://github.com/chernistry/alexchernysh-mcp">source</a>' +
-    "</nav></div></header>"
-  );
-}
 
 function hero(): string {
   return (
@@ -161,16 +148,6 @@ function exchange(call: {
     `<div class="pane out" tabindex="0"><span class="label">response</span><pre>${body}</pre></div>` +
     more +
     "</section>"
-  );
-}
-
-function footer(): string {
-  return (
-    '<footer><div class="wrap foot">' +
-    '<a href="https://alexchernysh.com">alexchernysh.com</a>' +
-    '<a href="https://github.com/chernistry/alexchernysh-mcp">source</a>' +
-    '<a href="https://mcp.bernstein.run">mcp.bernstein.run</a>' +
-    "</div></footer>"
   );
 }
 

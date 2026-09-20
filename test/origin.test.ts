@@ -53,3 +53,25 @@ describe("callTool", () => {
     expect((r.value as { error: { code: number } }).error.code).toBe(-32000);
   });
 });
+
+describe("origin answers framed as SSE", () => {
+  it("are parsed from the data: line rather than treated as an outage", async () => {
+    m = mockOrigin(
+      () =>
+        new Response('event: message\ndata: {"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"hi"}]}}\n\n', {
+          headers: { "content-type": "text/event-stream" },
+        }),
+    );
+    const r = await callTool(env, "get_cv", {});
+    expect(r.source).toBe("live");
+    expect((r.value as { result: { content: { text: string }[] } }).result.content[0]!.text).toBe("hi");
+  });
+
+  it("carries the caller's address when one is given, and the page identity otherwise", async () => {
+    m = mockOrigin(() => new Response(JSON.stringify({ jsonrpc: "2.0", id: 2, result: {} }), { headers: { "content-type": "application/json" } }));
+    await callTool(env, "get_cv", {}, { clientIp: "198.51.100.4" });
+    await callTool(env, "get_cv", {});
+    expect(m.calls[0]!.headers.get("x-mcp-client-ip")).toBe("198.51.100.4");
+    expect(m.calls[1]!.headers.get("x-mcp-client-ip")).toBe("edge-page");
+  });
+});

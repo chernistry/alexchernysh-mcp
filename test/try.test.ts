@@ -90,7 +90,7 @@ describe("GET /try", () => {
     m = mockOrigin(originHandler());
     const r = await req("/try");
     const html = await r.text();
-    expect(html).toContain('class="copy"');
+    expect(html).toContain('class="curl"');
     expect(html).toContain("curl -s https://mcp.alexchernysh.com/mcp");
   });
 
@@ -210,5 +210,58 @@ describe("POST /try", () => {
       body: body.toString(),
     });
     expect(r.headers.get("cache-control")).toBe("no-store");
+  });
+});
+
+describe("/try executes as the visitor, inside the visitor's bucket", () => {
+  it("forwards cf-connecting-ip to the origin instead of a shared page identity", async () => {
+    m = mockOrigin(async (r) => ((await r.clone().text()).includes('"tools/call"') ? rpcOk(2, { content: [] }) : rpcOk(1, { tools: TOOLS })));
+    await req("/try/get_profile", { headers: { "cf-connecting-ip": "203.0.113.9" } });
+    expect(m.calls.some((c) => c.headers.get("x-mcp-client-ip") === "203.0.113.9")).toBe(true);
+    // the tool list is the page's own read and stays on the page's bucket
+    expect(m.calls.some((c) => c.headers.get("x-mcp-client-ip") === "edge-page")).toBe(true);
+  });
+
+  it("over the per-IP limit → 429 page, and the origin is never called for the tool", async () => {
+    m = mockOrigin(() => rpcOk(1, { tools: TOOLS }));
+    const worker = (await import("../src/index.js")).default;
+    const { ctx } = await import("./helpers.js");
+    const env = { MCP_EDGE_SECRET: "s", MCP_RATE_LIMITER: { limit: async () => ({ success: false }) } as unknown as RateLimit };
+    const r = await worker.fetch(new Request("https://mcp.alexchernysh.com/try/get_profile", { headers: { "cf-connecting-ip": "203.0.113.9" } }), env, ctx);
+    expect(r.status).toBe(429);
+    expect(await r.text()).toContain("Slow down.");
+    expect(m.calls.filter((c) => c.headers.get("x-mcp-client-ip") === "203.0.113.9")).toHaveLength(0);
+  });
+
+  it("the limit does not gate the form itself, only execution", async () => {
+    m = mockOrigin(() => rpcOk(1, { tools: TOOLS }));
+    const worker = (await import("../src/index.js")).default;
+    const { ctx } = await import("./helpers.js");
+    const env = { MCP_EDGE_SECRET: "s", MCP_RATE_LIMITER: { limit: async () => ({ success: false }) } as unknown as RateLimit };
+    const r = await worker.fetch(new Request("https://mcp.alexchernysh.com/try?tool=ask_alex"), env, ctx);
+    expect(r.status).toBe(200);
+  });
+
+  it("POST body over 64 KB → 413 before the form is parsed", async () => {
+    m = mockOrigin(() => rpcOk(1, { tools: TOOLS }));
+    const body = new URLSearchParams({ tool: "ask_alex", question: "q".repeat(70_000) }).toString();
+    const r = await req("/try", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body });
+    expect(r.status).toBe(413);
+    // nothing reached the origin on the visitor's behalf (a tool call would carry "unknown", not the page identity)
+    expect(m.calls.every((c) => c.headers.get("x-mcp-client-ip") === "edge-page")).toBe(true);
+  });
+
+  it("the curl line shown to visitors carries the accept header the origin insists on", async () => {
+    m = mockOrigin(() => rpcOk(1, { tools: TOOLS }));
+    const html = await (await req("/try?tool=get_cv")).text();
+    expect(html).toContain("accept: application/json, text/event-stream");
+  });
+
+  it("wears the site shell: nav, wrap and footer", async () => {
+    m = mockOrigin(() => rpcOk(1, { tools: TOOLS }));
+    const html = await (await req("/try")).text();
+    expect(html).toContain('class="nav"');
+    expect(html).toContain('<main class="wrap try">');
+    expect(html).toContain('class="wrap foot"');
   });
 });

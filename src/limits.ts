@@ -1,6 +1,25 @@
-// Body-size, JSON-depth, and response-header guards shared by every route.
+// Body-size, JSON-depth, rate-limit and response-header guards shared by every route.
 // Nothing here calls out (no fetch/eval/new Function) — see
 // scripts/check-outbound.sh, wired into `npm test`.
+
+import type { Env } from "./index.js";
+
+/** True when the caller has exhausted its per-IP bucket. Fails open: a
+ * limiter error must not take the endpoint down. Shared by the proxy and by
+ * the pages that execute a tool on the visitor's behalf. */
+export async function overLimit(request: Request, env: Env): Promise<boolean> {
+  if (!env.MCP_RATE_LIMITER) return false;
+  try {
+    return !(await env.MCP_RATE_LIMITER.limit({ key: clientIp(request) })).success;
+  } catch {
+    return false;
+  }
+}
+
+/** The visitor's address as Cloudflare saw it; the origin keys its own bucket on it. */
+export function clientIp(request: Request): string {
+  return request.headers.get("cf-connecting-ip") ?? "unknown";
+}
 
 /** Hard cap on request body size. Matches the origin's own limit. */
 export const MAX_BODY_BYTES = 64 * 1024; // 64 KiB

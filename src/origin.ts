@@ -32,8 +32,23 @@ export interface ToolDescriptor {
 const DEFAULT_ORIGIN = "https://alexchernysh.com/mcp";
 const TTL_S = 300;
 const RPC_TIMEOUT_MS = 15_000;
+/** Bucket for calls the page makes for itself (the cached tool list and demo), not for a visitor. */
+const EDGE_PAGE = "edge-page";
 
-async function rpc(env: Env, method: string, params: unknown, id: number): Promise<{ body: unknown; ms: number }> {
+/** A JSON-RPC answer that the origin framed as SSE: the last `data:` line carries the message. */
+function parseSse(text: string): unknown {
+  const payloads = text.split(/\r?\n/).filter((l) => l.startsWith("data:")).map((l) => l.slice(5).trim());
+  if (payloads.length === 0) throw new Error("upstream sse without data");
+  return JSON.parse(payloads[payloads.length - 1]);
+}
+
+async function rpc(
+  env: Env,
+  method: string,
+  params: unknown,
+  id: number,
+  clientIp: string,
+): Promise<{ body: unknown; ms: number }> {
   const t0 = Date.now();
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), RPC_TIMEOUT_MS);
@@ -47,13 +62,14 @@ async function rpc(env: Env, method: string, params: unknown, id: number): Promi
         accept: "application/json, text/event-stream",
         "user-agent": `mcp.alexchernysh.com/${VERSION}`,
         ...(env.MCP_EDGE_SECRET
-          ? { "x-mcp-edge-secret": env.MCP_EDGE_SECRET, "x-mcp-client-ip": "edge-page" }
+          ? { "x-mcp-edge-secret": env.MCP_EDGE_SECRET, "x-mcp-client-ip": clientIp }
           : {}),
       },
       body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
     });
     if (!r.ok) throw new Error(`upstream ${r.status}`);
-    return { body: await r.json(), ms: Date.now() - t0 };
+    const sse = (r.headers.get("content-type") ?? "").includes("text/event-stream");
+    return { body: sse ? parseSse(await r.text()) : await r.json(), ms: Date.now() - t0 };
   } finally {
     clearTimeout(timer);
   }
@@ -101,7 +117,7 @@ export function listTools(env: Env): Promise<ToolResult<ToolDescriptor[]>> {
   return cached(
     "tools",
     async () =>
-      ((await rpc(env, "tools/list", {}, 1)).body as { result: { tools: ToolDescriptor[] } }).result.tools,
+      ((await rpc(env, "tools/list", {}, 1, EDGE_PAGE)).body as { result: { tools: ToolDescriptor[] } }).result.tools,
     toolsSnapshot as unknown as ToolDescriptor[],
   );
 }
@@ -110,19 +126,20 @@ export async function callTool(
   env: Env,
   name: string,
   args: Record<string, unknown>,
-  opts: { cache?: boolean } = {},
+  opts: { cache?: boolean; clientIp?: string } = {},
 ): Promise<ToolResult<unknown> & { request: unknown; response: unknown }> {
+  const ip = opts.clientIp ?? EDGE_PAGE;
   const request = { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name, arguments: args } };
   const fallback: unknown = name === "get_profile" ? profileSnapshot : null;
   const r: ToolResult<unknown> = opts.cache
-    ? await cached(`call:${name}:${JSON.stringify(args)}`, async () => (await rpc(env, "tools/call", request.params, 2)).body, {
+    ? await cached(`call:${name}:${JSON.stringify(args)}`, async () => (await rpc(env, "tools/call", request.params, 2, ip)).body, {
         jsonrpc: "2.0",
         id: 2,
         result: fallback,
       })
     : await (async (): Promise<ToolResult<unknown>> => {
         try {
-          const { body, ms } = await rpc(env, "tools/call", request.params, 2);
+          const { body, ms } = await rpc(env, "tools/call", request.params, 2, ip);
           return { value: body, source: "live", ageSeconds: 0, latencyMs: ms };
         } catch {
           return {

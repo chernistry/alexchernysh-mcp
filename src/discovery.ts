@@ -2,7 +2,7 @@
 
 /** /robots.txt — the two pages are crawlable, the JSON-RPC endpoint is not. */
 export function robotsTxt(): string {
-  return "User-agent: *\nAllow: /\nDisallow: /mcp\nSitemap: https://mcp.alexchernysh.com/llms.txt\n";
+  return "User-agent: *\nAllow: /\nAllow: /try\nDisallow: /mcp\n";
 }
 
 /** /llms.txt — a short description plus the tool list. */

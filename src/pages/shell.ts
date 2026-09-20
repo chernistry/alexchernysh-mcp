@@ -217,6 +217,24 @@ footer{margin-top:calc(var(--step)*8);border-top:1px solid var(--rule)}
 .foot{display:flex;gap:18px;flex-wrap:wrap;padding-top:22px;padding-bottom:44px;font-family:var(--font-mono);font-size:12px;color:var(--ink-faint)}
 .foot a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid transparent}
 .foot a:hover{color:var(--ink);border-bottom-color:var(--rule-strong)}
+.nav-links a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--rule-strong)}
+.try{padding-top:calc(var(--step)*7)}
+.try form{margin-top:calc(var(--step)*4);display:grid;gap:14px;max-width:560px}
+.field{display:grid;gap:6px}
+.field label{font-family:var(--font-mono);font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--ink-soft)}
+.field input,.field select,.field textarea{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--rule-strong);border-radius:8px;background:var(--bg);color:var(--ink);max-width:100%}
+.field textarea{min-height:96px;font-family:var(--font-mono);font-size:13px;resize:vertical}
+.field input[type="checkbox"]{width:auto;margin-right:6px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:4px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule-strong)}
+.curl{margin:calc(var(--step)*3) 0 0;padding:12px 14px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--bg-2);font-family:var(--font-mono);font-size:12.5px;line-height:1.5;color:var(--ink-soft);overflow-wrap:anywhere}
+.curl code{font:inherit}
+.result{margin-top:calc(var(--step)*4);border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;background:var(--bg)}
+.verdict{padding:11px 14px;background:var(--bg-2);border-bottom:1px solid var(--rule);font-family:var(--font-mono);font-size:12px}
+.verdict.ok{color:var(--ok)}
+.verdict.error{color:var(--bad)}
+.result pre{margin:0;padding:14px 16px;font-family:var(--font-mono);font-size:12.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;max-height:420px;overflow:auto}
+.result pre.request{border-bottom:1px solid var(--rule);color:var(--ink-soft)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}`;
 
 // Without scripting the tabs cannot switch, so every pane is shown at once and
@@ -269,6 +287,33 @@ export function page(opts: {
     (script ? `<script>${script}</script>` : "") +
     "</body></html>";
   return { html, csp: cspHeaderFor(script) };
+}
+
+/** Site header shared by every page; `active` underlines the current section. */
+export function navBar(active: "/" | "/try" = "/"): string {
+  const link = (href: string, label: string) =>
+    `<a href="${href}"${href === active ? ' aria-current="page"' : ""}>${label}</a>`;
+  return (
+    '<header class="nav"><div class="wrap nav-in">' +
+    '<a class="brand" href="/">alexchernysh <em>mcp</em></a>' +
+    '<nav class="nav-links" aria-label="Sections">' +
+    link("/#install", "install") +
+    link("/try", "try") +
+    '<a href="https://alexchernysh.com">alexchernysh.com</a>' +
+    '<a href="https://github.com/chernistry/alexchernysh-mcp">source</a>' +
+    "</nav></div></header>"
+  );
+}
+
+/** Site footer shared by every page. */
+export function footer(): string {
+  return (
+    '<footer><div class="wrap foot">' +
+    '<a href="https://alexchernysh.com">alexchernysh.com</a>' +
+    '<a href="https://github.com/chernistry/alexchernysh-mcp">source</a>' +
+    '<a href="https://mcp.bernstein.run">mcp.bernstein.run</a>' +
+    "</div></footer>"
+  );
 }
 
 /** Escapes a string for interpolation into HTML text or a quoted attribute. */

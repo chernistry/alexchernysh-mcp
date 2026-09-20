@@ -12,7 +12,7 @@ import { renderHome } from "./pages/home.js";
 import { renderTry } from "./pages/try.js";
 import { robotsTxt, llmsTxt, webmcpBridge } from "./discovery.js";
 import { listTools } from "./origin.js";
-import { withStandardHeaders } from "./limits.js";
+import { withStandardHeaders, readBodyWithLimit, MAX_BODY_BYTES } from "./limits.js";
 import { VERSION } from "./version.js";
 import cormorant from "../fonts/cormorant-garamond-600.woff2";
 import manrope400 from "../fonts/manrope-400.woff2";
@@ -38,8 +38,14 @@ export default {
       if (pathname === "/healthz") return json({ ok: true, version: VERSION });
       if (pathname === "/") { if (request.method !== "GET" && request.method !== "HEAD") return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" }); return html(await renderHome(env)); }
       if (pathname === "/try" || pathname.startsWith("/try/")) {
-        if (request.method === "POST" && pathname === "/try") { const r = await renderTry(env, url, await request.formData()); return html(r, r.status, "no-store"); }
-        if (request.method === "GET") { const r = await renderTry(env, url); return html(r, r.status, "no-store"); }
+        if (request.method === "POST" && pathname === "/try") {
+          const body = await readBodyWithLimit(request, MAX_BODY_BYTES);
+          if (!body.ok) return json({ error: "payload_too_large", limit: MAX_BODY_BYTES }, 413);
+          const form = await new Request(request.url, { method: "POST", headers: request.headers, body: body.text }).formData();
+          const r = await renderTry(env, url, form, request);
+          return html(r, r.status, "no-store");
+        }
+        if (request.method === "GET") { const r = await renderTry(env, url, undefined, request); return html(r, r.status, "no-store"); }
         return json({ error: "method_not_allowed" }, 405, { allow: "GET, POST" });
       }
       if (pathname.startsWith("/fonts/")) { const f = FONTS[pathname.slice(7)]; if (!f) return json({ error: "not_found" }, 404); return withStandardHeaders(new Response(f, { headers: { "content-type": "font/woff2", "cache-control": "public, max-age=31536000, immutable" } })); }
