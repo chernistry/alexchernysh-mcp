@@ -33,7 +33,7 @@ interface ToolInputSchema {
   required?: string[];
 }
 
-type RenderResult = { html: string; csp: string; status: number };
+type RenderResult = { html: string; csp: string; status: number; location?: string };
 
 /**
  * The one JSON-RPC "tools/call" envelope. Its source (via `.toString()`) is
@@ -295,14 +295,12 @@ ${result ? resultHtml({ source: result.source, latencyMs: result.latencyMs, requ
 <script type="application/json" id="tools">${toolsJson}</script>`;
 
   if (isPost) {
-    // The router (src/index.ts) does not forward a Location header from
-    // this return value — see the T3 report for the one-line change that
-    // would let it. Until then this 303 carries the full rendered result
-    // in its body (useful to `curl -s` without `-L`) plus a link to the
-    // permalink a browser can follow by hand.
+    // A real 303: the router forwards `location`, so a browser lands on the
+    // permalink. The body still carries the rendered result so `curl -s`
+    // without `-L` shows the answer too.
     const target = permalink(tool.name, args);
     const redirectBody = `<p>Done. <a href="${escapeHtml(target)}">Continue to the permalink</a> (${escapeHtml(target)}).</p>${bodyHtml}`;
-    return shellPage(303, redirectBody);
+    return { ...shellPage(303, redirectBody), location: new URL(target, url).toString() };
   }
 
   return shellPage(200, bodyHtml);

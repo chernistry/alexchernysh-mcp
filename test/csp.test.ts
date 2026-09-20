@@ -44,7 +44,9 @@ async function render(path: string): Promise<{ status: number; csp: string | nul
     status: r.status,
     csp: r.headers.get("content-security-policy"),
     html,
-    scripts: [...html.matchAll(SCRIPT_TAG)].map((x) => x[1] ?? ""),
+    // Only executable scripts count: a `type="application/json"` block is data the
+    // browser never runs, so the CSP hash does not cover it.
+    scripts: [...html.matchAll(SCRIPT_TAG)].filter((x) => !/\btype\s*=\s*["']application\/json["']/i.test(x[0])).map((x) => x[1] ?? ""),
   };
 }
 
@@ -63,11 +65,10 @@ describe("content-security-policy", () => {
     m = liveOrigin();
     const { status, csp, html, scripts } = await render("/try");
     expect(status).toBe(200);
-    // /try renders through the same shell; until it does (T3) it carries none.
-    expect(scripts.length).toBeLessThanOrEqual(1);
+    expect(scripts).toHaveLength(1);
+    expect(csp).toBe(policyFor(await sha256Base64(scripts[0]!)));
     expect(html).not.toMatch(INLINE_HANDLER);
     expect(html).not.toMatch(/<script[^>]+\bsrc=/i);
-    if (scripts.length === 1) expect(csp).toBe(policyFor(await sha256Base64(scripts[0]!)));
   });
 
   it("names 'none' rather than a hash when a page carries no script", () => {

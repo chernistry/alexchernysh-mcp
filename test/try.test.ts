@@ -185,6 +185,7 @@ describe("POST /try", () => {
       body: body.toString(),
     });
     expect(r.status).toBe(303);
+    expect(r.headers.get("location")).toBe("https://mcp.alexchernysh.com/try/get_profile");
     const html = await r.text();
     expect(html).toContain("/try/get_profile");
   });
