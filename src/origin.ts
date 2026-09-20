@@ -44,7 +44,7 @@ async function rpc(env: Env, method: string, params: unknown, id: number): Promi
       redirect: "manual",
       headers: {
         "content-type": "application/json",
-        accept: "application/json",
+        accept: "application/json, text/event-stream",
         "user-agent": `mcp.alexchernysh.com/${VERSION}`,
         ...(env.MCP_EDGE_SECRET
           ? { "x-mcp-edge-secret": env.MCP_EDGE_SECRET, "x-mcp-client-ip": "edge-page" }

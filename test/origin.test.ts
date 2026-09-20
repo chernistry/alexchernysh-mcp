@@ -27,6 +27,7 @@ describe("listTools", () => {
     expect(r.value).toHaveLength(1);
     expect(m.calls[0]!.url).toBe("https://alexchernysh.com/mcp");
     expect(m.calls[0]!.headers.get("x-mcp-edge-secret")).toBe("test-secret");
+    expect(m.calls[0]!.headers.get("accept")).toBe("application/json, text/event-stream");
   });
 
   it("treats an origin 5xx as no answer", async () => {

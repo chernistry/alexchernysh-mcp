@@ -23,7 +23,7 @@ export const VERSION = pkg.version;
 const FONTS: Record<string, ArrayBuffer> = { "cormorant-garamond-600.woff2": cormorant, "manrope-400.woff2": manrope400, "manrope-600.woff2": manrope600 };
 
 const json = (body: unknown, status = 200, h: Record<string, string> = {}) => withStandardHeaders(new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store", ...h } }));
-const html = (r: { html: string; csp: string }, status = 200, cache = "public, max-age=300") => withStandardHeaders(new Response(r.html, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": cache, "content-security-policy": r.csp } }));
+const html = (r: { html: string; csp: string; location?: string }, status = 200, cache = "public, max-age=300") => withStandardHeaders(new Response(r.html, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": cache, "content-security-policy": r.csp, ...(r.location ? { location: r.location } : {}) } }));
 const wantsHtml = (r: Request) => /\btext\/html\b/.test(r.headers.get("accept") ?? "");
 
 export default {
