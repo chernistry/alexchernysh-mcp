@@ -12,9 +12,6 @@
     "audit": "npm audit --audit-level=high",
     "snapshots": "node scripts/refresh-snapshots.mjs"
   },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "1.30.0"
-  },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260918.1",
     "@types/node": "24.10.1",
