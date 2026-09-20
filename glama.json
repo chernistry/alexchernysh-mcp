@@ -1,0 +1,1 @@
+{"$schema":"https://glama.ai/mcp/schemas/server.json","description":"Stateless, read-only MCP endpoint that answers questions about Alex Chernysh from the site's own notes and case studies. No account, nothing stored.","maintainers":["chernistry"]}
