@@ -12,7 +12,7 @@
 // rendering. Both point at the same single origin.
 
 import type { Env } from "./index.js";
-import { VERSION } from "./index.js";
+import { VERSION } from "./version.js";
 import toolsSnapshot from "../data/tools.snapshot.json";
 import profileSnapshot from "../data/profile.snapshot.json";
 

@@ -10,7 +10,8 @@
 // markup, so a page served while the origin is unreachable says so instead of
 // pretending.
 
-import { VERSION, type Env } from "../index.js";
+import type { Env } from "../index.js";
+import { VERSION } from "../version.js";
 import { listTools, callTool } from "../origin.js";
 import { page, escapeHtml } from "./shell.js";
 

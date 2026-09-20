@@ -24,7 +24,7 @@
 //     edge HTML error page.
 
 import type { Env } from "./index.js";
-import { VERSION } from "./index.js";
+import { VERSION } from "./version.js";
 import {
   MAX_BODY_BYTES,
   readBodyWithLimit,

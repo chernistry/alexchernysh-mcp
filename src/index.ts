@@ -13,13 +13,12 @@ import { renderTry } from "./pages/try.js";
 import { robotsTxt, llmsTxt, webmcpBridge } from "./discovery.js";
 import { listTools } from "./origin.js";
 import { withStandardHeaders } from "./limits.js";
+import { VERSION } from "./version.js";
 import cormorant from "../fonts/cormorant-garamond-600.woff2";
 import manrope400 from "../fonts/manrope-400.woff2";
 import manrope600 from "../fonts/manrope-600.woff2";
-import pkg from "../package.json" with { type: "json" };
 
 export interface Env { MCP_RATE_LIMITER?: RateLimit; MCP_EDGE_SECRET?: string; ORIGIN_MCP_URL?: string }
-export const VERSION = pkg.version;
 const FONTS: Record<string, ArrayBuffer> = { "cormorant-garamond-600.woff2": cormorant, "manrope-400.woff2": manrope400, "manrope-600.woff2": manrope600 };
 
 const json = (body: unknown, status = 200, h: Record<string, string> = {}) => withStandardHeaders(new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store", ...h } }));
